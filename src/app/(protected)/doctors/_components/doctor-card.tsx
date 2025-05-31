@@ -46,7 +46,6 @@ interface DoctorCardProps {
 const DoctorCard = ({ doctor }: DoctorCardProps) => {
   const [isUpsertDoctorDialogOpen, setIsUpsertDoctorDialogOpen] =
     useState(false);
-
   const deleteDoctorAction = useAction(deleteDoctor, {
     onSuccess: () => {
       toast.success("Médico deletado com sucesso.");
@@ -55,7 +54,6 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
       toast.error("Erro ao deletar médico.");
     },
   });
-
   const handleDeleteDoctorClick = () => {
     if (!doctor) return;
     deleteDoctorAction.execute({ id: doctor.id });
@@ -65,7 +63,6 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
     .split(" ")
     .map((name) => name[0])
     .join("");
-
   const availability = getAvailability(doctor);
 
   return (
@@ -81,29 +78,23 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
           </div>
         </div>
       </CardHeader>
-
       <Separator />
-
       <CardContent className="flex flex-col gap-2">
         <Badge variant="outline">
           <CalendarIcon className="mr-1" />
           {availability.from.format("dddd")} a {availability.to.format("dddd")}
         </Badge>
-
         <Badge variant="outline">
           <ClockIcon className="mr-1" />
           {availability.from.format("HH:mm")} as{" "}
           {availability.to.format("HH:mm")}
         </Badge>
-
         <Badge variant="outline">
           <DollarSignIcon className="mr-1" />
           {formatCurrencyInCents(doctor.appointmentPriceInCents)}
         </Badge>
       </CardContent>
-
       <Separator />
-
       <CardFooter className="flex flex-col gap-2">
         <Dialog
           open={isUpsertDoctorDialogOpen}
@@ -112,19 +103,16 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
           <DialogTrigger asChild>
             <Button className="w-full">Ver detalhes</Button>
           </DialogTrigger>
-
           <UpsertDoctorForm
             doctor={{
               ...doctor,
               availableFromTime: availability.from.format("HH:mm:ss"),
               availableToTime: availability.to.format("HH:mm:ss"),
             }}
-            onSuccess={() => {
-              setIsUpsertDoctorDialogOpen(false);
-            }}
+            onSuccess={() => setIsUpsertDoctorDialogOpen(false)}
+            isOpen={isUpsertDoctorDialogOpen}
           />
         </Dialog>
-
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="outline" className="w-full">
@@ -132,22 +120,18 @@ const DoctorCard = ({ doctor }: DoctorCardProps) => {
               Deletar médico
             </Button>
           </AlertDialogTrigger>
-
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
                 Tem certeza que deseja deletar esse médico?
               </AlertDialogTitle>
-
               <AlertDialogDescription>
                 Essa ação não pode ser revertida. Isso irá deletar o médico e
                 todas as consultas agendadas.
               </AlertDialogDescription>
             </AlertDialogHeader>
-
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-
               <AlertDialogAction onClick={handleDeleteDoctorClick}>
                 Deletar
               </AlertDialogAction>

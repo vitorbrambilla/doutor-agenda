@@ -20,6 +20,10 @@ export const usersTable = pgTable("users", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
+export const usersTableRelations = relations(usersTable, ({ many }) => ({
+  usersToClinics: many(usersToClinicsTable),
+}));
+
 export const sessionsTable = pgTable("sessions", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -60,14 +64,9 @@ export const verificationsTable = pgTable("verifications", {
   updatedAt: timestamp("updated_at"),
 });
 
-export const usersTableRelations = relations(usersTable, ({ many }) => ({
-  usersToClinics: many(usersToClinicsTable),
-}));
-
 export const clinicsTable = pgTable("clinics", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
-
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -81,7 +80,6 @@ export const usersToClinicsTable = pgTable("users_to_clinics", {
   clinicId: uuid("clinic_id")
     .notNull()
     .references(() => clinicsTable.id, { onDelete: "cascade" }),
-
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -114,18 +112,15 @@ export const doctorsTable = pgTable("doctors", {
   clinicId: uuid("clinic_id")
     .notNull()
     .references(() => clinicsTable.id, { onDelete: "cascade" }),
-
   name: text("name").notNull(),
   avatarImageUrl: text("avatar_image_url"),
-  specialty: text("specialty").notNull(),
-  appointmentPriceInCents: integer("appointment_price_in_cents").notNull(),
-
-  availableFromWeekDay: integer("available_from_weekday").notNull(),
-  availableToWeekDay: integer("available_to_weekday").notNull(),
-
+  // 1 - Monday, 2 - Tuesday, 3 - Wednesday, 4 - Thursday, 5 - Friday, 6 - Saturday, 0 - Sunday
+  availableFromWeekDay: integer("available_from_week_day").notNull(),
+  availableToWeekDay: integer("available_to_week_day").notNull(),
   availableFromTime: time("available_from_time").notNull(),
   availableToTime: time("available_to_time").notNull(),
-
+  specialty: text("specialty").notNull(),
+  appointmentPriceInCents: integer("appointment_price_in_cents").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -134,7 +129,7 @@ export const doctorsTable = pgTable("doctors", {
 
 export const doctorsTableRelations = relations(
   doctorsTable,
-  ({ one, many }) => ({
+  ({ many, one }) => ({
     clinic: one(clinicsTable, {
       fields: [doctorsTable.clinicId],
       references: [clinicsTable.id],
@@ -143,20 +138,18 @@ export const doctorsTableRelations = relations(
   }),
 );
 
-export const patientsSexEnum = pgEnum("patient_sex", ["male", "female"]);
+export const patientSexEnum = pgEnum("patient_sex", ["male", "female"]);
 
 export const patientsTable = pgTable("patients", {
   id: uuid("id").defaultRandom().primaryKey(),
   clinicId: uuid("clinic_id")
     .notNull()
     .references(() => clinicsTable.id, { onDelete: "cascade" }),
-
   name: text("name").notNull(),
   email: text("email").notNull(),
   phoneNumber: text("phone_number").notNull(),
-  sex: patientsSexEnum("sex").notNull(),
-
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  sex: patientSexEnum("sex").notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => new Date()),
@@ -176,7 +169,7 @@ export const patientsTableRelations = relations(
 export const appointmentsTable = pgTable("appointments", {
   id: uuid("id").defaultRandom().primaryKey(),
   date: timestamp("date").notNull(),
-
+  appointmentPriceInCents: integer("appointment_price_in_cents").notNull(),
   clinicId: uuid("clinic_id")
     .notNull()
     .references(() => clinicsTable.id, { onDelete: "cascade" }),
@@ -186,7 +179,6 @@ export const appointmentsTable = pgTable("appointments", {
   doctorId: uuid("doctor_id")
     .notNull()
     .references(() => doctorsTable.id, { onDelete: "cascade" }),
-
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
