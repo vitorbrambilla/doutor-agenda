@@ -34,18 +34,21 @@ const DoctorsPage = async () => {
   const doctors = await db.query.doctorsTable.findMany({
     where: eq(doctorsTable.clinicId, session.user.clinic.id),
   });
-  
+
   return (
     <PageContainer>
       <PageHeader>
         <PageHeaderContent>
           <PageTitle>Médicos</PageTitle>
+
           <PageDescription>Gerencie os médicos da sua clínica</PageDescription>
         </PageHeaderContent>
+
         <PageActions>
           <AddDoctorButton />
         </PageActions>
       </PageHeader>
+
       <PageContent>
         <div className="grid grid-cols-3 gap-6">
           {doctors.map((doctor) => (

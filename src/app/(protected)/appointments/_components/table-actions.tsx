@@ -65,8 +65,8 @@ const AppointmentsTableActions = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" size="icon">
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" asChild>
           <MoreVerticalIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
